@@ -85,7 +85,7 @@ fun LogViewerScreen(viewModel: ExploitViewModel, onBack: () -> Unit) {
                 scope.launch {
                     val text = withContext(Dispatchers.IO) { viewModel.exportAllRunsText() }
                     val name = exportTextToDownload(context, text)
-                    toast(context, if (name != null) "已导出到 Download/$name" else "导出失败，请重试")
+                    toast(context, if (name != null) "Exported to Download/$name" else "Export failed, please retry")
                 }
             },
             onClearAll = {
@@ -134,22 +134,22 @@ private fun RunListPage(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             TextButton(onClick = onBack) {
-                Text("返回", color = CvePalette.Accent, style = MaterialTheme.typography.labelLarge)
+                Text("Back", color = CvePalette.Accent, style = MaterialTheme.typography.labelLarge)
             }
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    "运行记录",
+                    "Run History",
                     style = MaterialTheme.typography.titleLarge,
                     color = CvePalette.TextPrimary,
                 )
                 Text(
-                    if (runs.isEmpty()) "暂无记录" else "共 ${runs.size} 次 · 最新在最上",
+                    if (runs.isEmpty()) "No records yet" else "${runs.size} runs · newest on top",
                     style = MaterialTheme.typography.labelSmall,
                     color = CvePalette.TextMuted,
                 )
             }
             TextButton(onClick = onExportAll, enabled = runs.isNotEmpty()) {
-                Text("导出全部", color = CvePalette.Accent, style = MaterialTheme.typography.labelLarge)
+                Text("Export All", color = CvePalette.Accent, style = MaterialTheme.typography.labelLarge)
             }
         }
         HorizontalDivider(color = CvePalette.Outline, thickness = 1.dp)
@@ -157,10 +157,10 @@ private fun RunListPage(
         if (runs.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("暂无运行记录", color = CvePalette.TextMuted)
+                    Text("No run records", color = CvePalette.TextMuted)
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        "每执行一次 ROOT 会单独保存一份记录",
+                        "Each ROOT execution saves a separate record",
                         color = CvePalette.TextMuted,
                         style = MaterialTheme.typography.labelSmall,
                     )
@@ -180,7 +180,7 @@ private fun RunListPage(
                     ) {
                         TextButton(onClick = { confirmClear = true }) {
                             Text(
-                                "清空全部记录",
+                                "Clear All Records",
                                 color = CvePalette.TextMuted,
                                 style = MaterialTheme.typography.labelSmall,
                             )
@@ -225,7 +225,7 @@ private fun RunRow(meta: RunLogMeta, onOpen: (RunLogMeta) -> Unit) {
         Column(modifier = Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    "第 ${meta.runId} 次运行",
+                    "Run #${meta.runId}",
                     color = CvePalette.TextPrimary,
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -242,7 +242,7 @@ private fun RunRow(meta: RunLogMeta, onOpen: (RunLogMeta) -> Unit) {
                     append(dateTimeFormat.format(Date(meta.startedAt)))
                     append(" · ")
                     append(RunLogStore.fmtDuration(meta.durationMs))
-                    meta.lineCount?.let { append(" · $it 条") }
+                    meta.lineCount?.let { append(" · $it lines") }
                 },
                 color = CvePalette.TextMuted,
                 style = MaterialTheme.typography.labelSmall,
@@ -292,11 +292,11 @@ private fun RunDetailPage(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             TextButton(onClick = onBack) {
-                Text("返回", color = CvePalette.Accent, style = MaterialTheme.typography.labelLarge)
+                Text("Back", color = CvePalette.Accent, style = MaterialTheme.typography.labelLarge)
             }
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    "第 ${meta.runId} 次运行",
+                    "Run #${meta.runId}",
                     style = MaterialTheme.typography.titleLarge,
                     color = CvePalette.TextPrimary,
                 )
@@ -308,7 +308,7 @@ private fun RunDetailPage(
                         meta.exitCode?.let { append(" (exit=$it)") }
                         append(" · ")
                         append(RunLogStore.fmtDuration(meta.durationMs))
-                        meta.lineCount?.let { append(" · $it 条") }
+                        meta.lineCount?.let { append(" · $it lines") }
                     },
                     style = MaterialTheme.typography.labelSmall,
                     color = resultColor(meta.result),
@@ -318,25 +318,25 @@ private fun RunDetailPage(
                 onClick = {
                     val text = lines?.joinToString("\n").orEmpty()
                     if (text.isBlank()) {
-                        toast(context, "内容尚未读出")
+                        toast(context, "Content not yet loaded")
                     } else {
                         copyToClipboard(context, text)
-                        toast(context, "已复制本次记录")
+                        toast(context, "Copied this run's record")
                     }
                 },
                 enabled = lines != null,
             ) {
-                Text("复制", color = CvePalette.Accent, style = MaterialTheme.typography.labelLarge)
+                Text("Copy", color = CvePalette.Accent, style = MaterialTheme.typography.labelLarge)
             }
             TextButton(
                 onClick = {
                     val text = lines?.joinToString("\n").orEmpty()
                     val name = exportTextToDownload(context, text)
-                    toast(context, if (name != null) "已导出到 Download/$name" else "导出失败，请重试")
+                    toast(context, if (name != null) "Exported to Download/$name" else "Export failed, please retry")
                 },
                 enabled = lines != null,
             ) {
-                Text("导出", color = CvePalette.Accent, style = MaterialTheme.typography.labelLarge)
+                Text("Export", color = CvePalette.Accent, style = MaterialTheme.typography.labelLarge)
             }
         }
 
@@ -347,8 +347,8 @@ private fun RunDetailPage(
                 .padding(horizontal = 14.dp, vertical = 7.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
-            infoLine("设备", meta.device)
-            infoLine("内核", meta.kernel)
+            infoLine("Device", meta.device)
+            infoLine("Kernel", meta.kernel)
             infoLine("Profile", meta.profile)
         }
         HorizontalDivider(color = CvePalette.Outline, thickness = 1.dp)
@@ -356,11 +356,11 @@ private fun RunDetailPage(
         val body = lines
         if (body == null) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("读取中…", color = CvePalette.TextMuted)
+                Text("Loading…", color = CvePalette.TextMuted)
             }
         } else if (body.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("本次没有采集到日志", color = CvePalette.TextMuted)
+                Text("No logs captured for this run", color = CvePalette.TextMuted)
             }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {

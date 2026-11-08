@@ -104,7 +104,7 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("keystore/release.keystore")
+            storeFile = file("../keystore/release.keystore")
         storePassword = loadSigningPassword("CVE98260_STORE_PASSWORD")
         keyAlias = "cve98260"
         keyPassword = loadSigningPassword("CVE98260_KEY_PASSWORD")

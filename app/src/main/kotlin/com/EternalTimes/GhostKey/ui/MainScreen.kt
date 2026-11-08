@@ -94,15 +94,15 @@ private const val CVE_ID = "CVE-2026-98260"
 private enum class Screen { MAIN, SETTINGS, LOGS }
 
 /** 内核表未命中时 ViewModel 回落的文案前缀。 */
-private const val UNMATCHED_PREFIX = "未匹配"
+private const val UNMATCHED_PREFIX = "Unmatched"
 
 /** 阶段英文代号 → 中文短名。 */
 private val STAGE_LABELS = mapOf(
-    NativeContract.Stage.CALIB_A to "校准 A",
-    NativeContract.Stage.CALIB_B to "校准 B",
-    NativeContract.Stage.INJECT to "注入",
-    NativeContract.Stage.VERIFY to "校验",
-    NativeContract.Stage.KSU to "KernelSU",
+    NativeContract.Stage.CALIB_A to "Calibrate A",
+    NativeContract.Stage.CALIB_B to "Calibrate B",
+    NativeContract.Stage.INJECT to "Inject",
+    NativeContract.Stage.VERIFY to "Verify",
+    NativeContract.Stage.KSU to "KernelSU"
 )
 
 @Composable
@@ -165,13 +165,13 @@ private fun MainContent(
     val shizukuReady = uiState.shizukuStatus == ShizukuStatus.READY
     val kernelMatched = uiState.matchedProfile.isNotBlank() &&
         !uiState.matchedProfile.startsWith(UNMATCHED_PREFIX) &&
-        uiState.matchedProfile != "检测中..."
+        uiState.matchedProfile != "Detecting..."
     val blockReason = when {
-        uiState.isRunning -> "流水线执行中，请勿退出。"
-        !shizukuReady -> "请先完成 Shizuku 授权（见上方提示）。"
-        !kernelMatched -> "当前内核未命中可用 profile（内置表或已导入）。"
+        uiState.isRunning -> "Pipeline is running, do not exit."
+        !shizukuReady -> "Please complete Shizuku authorization first (see prompt above)."
+        !kernelMatched -> "Current kernel does not match any available profile (built-in or imported)."
         uiState.kernelSupport == DeviceBinding.KernelSupport.UNKNOWN ->
-            "内核版本不可读或为模拟器/通用内核，无法执行。"
+            "Kernel version cannot be read or is emulator/generic kernel, cannot execute."
         else -> null
     }
 
@@ -265,17 +265,17 @@ private fun KernelRangeDialog(
         onDismissRequest = onDismiss,
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("取消", color = CvePalette.TextMuted)
+                Text("Cancel", color = CvePalette.TextMuted)
             }
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("仍要执行", color = CvePalette.Warning)
+                Text("Execute Anyway", color = CvePalette.Warning)
             }
         },
         title = {
             Text(
-                text = "内核不在适用范围内",
+                text = "Kernel Out of Applicable Range",
                 style = MaterialTheme.typography.titleMedium,
                 color = CvePalette.Warning,
             )
@@ -283,20 +283,21 @@ private fun KernelRangeDialog(
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 SectionText(
-                    title = "当前内核",
+                    title = "Current Kernel",
                     body = kernel,
                 )
                 SectionText(
-                    title = "漏洞影响范围（CVE-2026-98260 官方通告）",
-                    body = "POSIX CPU timer exec() UAF 自 Linux 5.7 引入。" +
-                        "已修复：6.6 ≥ 6.6.158、6.12 ≥ 6.12.112、6.18 ≥ 6.18.54、7.2 ≥ 7.2.8、7.3 及之后；" +
-                        "5.10 / 5.15 / 6.1 等分支未见修复，仍受影响。",
+                    title = "Vulnerability Impact Range (CVE-2026-98260 Official Advisory)",
+                    body = "POSIX CPU timer exec() UAF introduced in Linux 5.7." +
+                        "Fixed in: 6.6 ≥ 6.6.158, 6.12 ≥ 6.12.112, 6.18 ≥ 6.18.54, 7.2 ≥ 7.2.8, 7.3+." +
+                        "Branches 5.10 / 5.15 / 6.1 remain unpatched and are affected.",
                 )
                 SectionText(
-                    title = "提醒",
-                    body = "你的内核不在上述影响范围内（低于 5.7，或已是修复版本）。" +
-                        "执行仍会继续（不被阻止），但利用大概率失败；另外厂商可能已回移植修复而未改版本号，" +
-                        "此判断仅供参考。请自行评估风险。",
+                    title = "Reminder",
+                    body = "Your kernel is not in the above impact range (below 5.7 or already patched)." +
+                        "Execution will continue (not blocked), but exploitation will likely fail;" +
+                        "vendors may have backported fixes without changing version numbers." +
+                        "This assessment is for reference only. Please evaluate risks yourself.",
                     highlight = true,
                 )
             }
@@ -324,12 +325,12 @@ private fun TemporaryRootBanner() {
         Spacer(modifier = Modifier.width(10.dp))
         Column {
             Text(
-                "临时 ROOT · 重启后失效",
+                "Temporary ROOT · Expires on Reboot",
                 color = CvePalette.Warning,
                 style = MaterialTheme.typography.labelLarge,
             )
             Text(
-                "本工具提供的是临时 root，重启后自动恢复；如需持久 root 请使用 KernelSU 等方案。",
+                "This tool provides temporary root that restores on reboot; for persistent root, use KernelSU or similar.",
                 color = CvePalette.TextMuted,
                 style = MaterialTheme.typography.labelSmall,
             )
@@ -347,12 +348,12 @@ private fun UsbCloseDialog(onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("知道了", color = CvePalette.Accent)
+                Text("Got It", color = CvePalette.Accent)
             }
         },
         title = {
             Text(
-                text = "建议关闭 USB 调试",
+                text = "Suggest Disabling USB Debugging",
                 style = MaterialTheme.typography.titleMedium,
                 color = CvePalette.Warning,
             )
@@ -360,15 +361,14 @@ private fun UsbCloseDialog(onDismiss: () -> Unit) {
         text = {
             Column {
                 Text(
-                    "ROOT 已完成，检测到「USB 调试」仍处于开启状态。若提权完成后仍长期保持该通道开启，" +
-                        "本地恶意应用可能借道 adb 获取 shell 权限，扩大攻击面。",
+                    "ROOT is complete, but USB debugging is still enabled. If it remains open after privilege escalation," +
+                        "local malicious apps may obtain shell access via adb, expanding the attack surface.",
                     color = CvePalette.TextSecondary,
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    "请进入 设置 → 系统与更新 → 开发者选项，关闭「USB 调试」与「USB 无线调试」。" +
-                        "之后可随时重新开启，不影响正常使用。",
+                    "Go to Settings → System & Updates → Developer Options, disable \"USB Debugging\" and \"USB Wireless Debugging\". You can re-enable them at any time without affecting normal use.",
                     color = CvePalette.TextSecondary,
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -425,7 +425,7 @@ private fun NoticeDialog(onDismiss: () -> Unit) {
         properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false),
         confirmButton = {
             CountdownConfirmButton(
-                text = "我知道了",
+                text = "Got It",
                 totalSeconds = 5,
                 enabledColor = CvePalette.Accent,
                 onConfirm = onDismiss,
@@ -433,7 +433,7 @@ private fun NoticeDialog(onDismiss: () -> Unit) {
         },
         title = {
             Text(
-                text = "使用须知与免责声明",
+                text = "Usage Notice and Disclaimer",
                 style = MaterialTheme.typography.titleMedium,
                 color = CvePalette.TextPrimary,
             )
@@ -441,20 +441,20 @@ private fun NoticeDialog(onDismiss: () -> Unit) {
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 SectionText(
-                    title = "用途说明",
-                    body = "本工具利用 CVE-2026-98260 内核漏洞，在本地设备上将 adb shell 提权至 root，并可选地接管 KernelSU，仅供授权设备的安全研究与学习使用。",
+                    title = "Purpose Description",
+                    body = "This tool exploits CVE-2026-98260 kernel vulnerability to escalate adb shell to root on the local device, and optionally take over KernelSU, for authorized security research and learning purposes only.",
                 )
                 SectionText(
-                    title = "免责声明",
-                    body = "使用者须自行承担一切后果。因使用本工具导致的设备异常、数据丢失、系统不稳定、保修失效或任何直接或间接损失，作者与分发方不承担任何责任。请勿在任何非自有或未经授权的设备上使用。",
+                    title = "Disclaimer",
+                    body = "The user assumes all consequences. The author and distributor are not responsible for any device abnormality, data loss, system instability, warranty invalidation, or any direct or indirect loss caused by using this tool. Do not use on any device that is not your own or not authorized.",
                 )
                 SectionText(
-                    title = "提权流程",
-                    body = "① 校准 KASLR slide → ② 校准线性映射基址 → ③ 注入 UAF 漏洞 → ④ 凭据提权 → ⑤ KernelSU 接管。",
+                    title = "Privilege Escalation Flow",
+                    body = "① Calibrate KASLR slide → ② Calibrate linear mapping base → ③ Inject UAF vulnerability → ④ Escalate credentials → ⑤ KernelSU takeover.",
                 )
                 SectionText(
-                    title = "完成后请关闭 USB 调试（重要）",
-                    body = "提权完成后，请关闭「USB 调试」与「USB 无线调试」：设置 → 系统与更新 → 开发者选项 → 关闭对应开关。该操作只需关闭一次即可，后续可随时重新开启，不影响设备正常使用。",
+                    title = "After Completion, Disable USB Debugging (Important)",
+                    body = "After privilege escalation, disable \"USB Debugging\" and \"USB Wireless Debugging\": Settings → System & Updates → Developer Options → Turn off the corresponding switches. This operation only needs to be done once, and can be re-enabled at any time without affecting normal device use.",
                     highlight = true,
                 )
             }
@@ -473,7 +473,7 @@ private fun InjectRiskDialog(onDismiss: () -> Unit) {
         properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false),
         confirmButton = {
             CountdownConfirmButton(
-                text = "我知道了",
+                text = "Got It",
                 totalSeconds = 5,
                 enabledColor = CvePalette.Warning,
                 onConfirm = onDismiss,
@@ -482,7 +482,7 @@ private fun InjectRiskDialog(onDismiss: () -> Unit) {
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "注入阶段 · 安全提示",
+                    text = "Injection Stage · Safety Hint",
                     style = MaterialTheme.typography.titleMedium,
                     color = CvePalette.TextPrimary,
                 )
@@ -491,21 +491,21 @@ private fun InjectRiskDialog(onDismiss: () -> Unit) {
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 SectionText(
-                    title = "当前状态",
-                    body = "已进入注入（UAF 漏洞利用）阶段，正在通过 adb / USB 调试通道获取 shell 上下文，以写入内核 ftrace。",
+                    title = "Current Status",
+                    body = "Entered injection (UAF exploitation) stage, obtaining shell context via adb / USB debugging channel to write kernel ftrace.",
                 )
                 SectionText(
-                    title = "SO 风险说明",
-                    body = "该过程依赖「USB 调试 / USB 无线调试」建立的 adb 通道。若提权完成后仍长期保持该通道开启，本地恶意应用可能借道 adb 获取 shell 权限，扩大攻击面。",
+                    title = "SO Risk Explanation",
+                    body = "This process relies on the adb channel established via \"USB Debugging / USB Wireless Debugging\". If the channel remains open after privilege escalation, local malicious apps may obtain shell permissions via adb, expanding the attack surface.",
                     highlight = true,
                 )
                 SectionText(
-                    title = "解决方法",
-                    body = "提权完成后，请进入 设置 → 系统与更新 → 开发者选项，关闭「USB 调试」与「USB 无线调试」。只需关闭一次即可消除该风险，之后可随时重新开启，不影响设备正常使用。",
+                    title = "Solution",
+                    body = "After privilege escalation, go to Settings → System & Updates → Developer Options, disable \"USB Debugging\" and \"USB Wireless Debugging\". Only needs to be closed once to eliminate this risk, can be re-enabled at any time without affecting normal device use.",
                 )
                 SectionText(
-                    title = "提示",
-                    body = "本弹窗为安全提醒，流水线会在后台继续运行。",
+                    title = "Hint",
+                    body = "This popup is a safety reminder; the pipeline will continue running in the background.",
                 )
             }
         },
@@ -548,9 +548,9 @@ private fun DeviceInfoBar(
         else -> CvePalette.Warning
     }
     val statusText = when {
-        unknown -> "内核不支持（不可执行）"
-        inRange -> "内核在适用范围内"
-        else -> "内核在适用范围外（执行前会提醒）"
+        unknown -> "Kernel Not Supported (Cannot Execute)"
+        inRange -> "Kernel Within Applicable Range"
+        else -> "Kernel Outside Applicable Range (Will Prompt Before Execution)"
     }
     Column(
         modifier = Modifier
@@ -560,7 +560,7 @@ private fun DeviceInfoBar(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "设备",
+                text = "Device",
                 style = MaterialTheme.typography.titleSmall,
                 color = CvePalette.TextPrimary,
                 fontWeight = FontWeight.SemiBold,
@@ -581,9 +581,9 @@ private fun DeviceInfoBar(
             Spacer(modifier = Modifier.weight(1f))
         }
         Spacer(modifier = Modifier.height(8.dp))
-        InfoRow(label = "机型", value = model.ifBlank { "未知" })
+        InfoRow(label = "Model", value = model.ifBlank { "Unknown" })
         Spacer(modifier = Modifier.height(6.dp))
-        InfoRow(label = "内核", value = kernel.ifBlank { "检测中..." })
+        InfoRow(label = "Kernel", value = kernel.ifBlank { "Detecting..." })
     }
 }
 
@@ -662,14 +662,14 @@ private fun AppHeader(title: String, onRefresh: () -> Unit, onSettings: () -> Un
         }
         TextButton(onClick = onRefresh) {
             Text(
-                text = "刷新",
+                text = "Refresh",
                 style = MaterialTheme.typography.labelLarge,
                 color = CvePalette.Accent,
             )
         }
         TextButton(onClick = onSettings) {
             Text(
-                text = "设置",
+                text = "Settings",
                 style = MaterialTheme.typography.labelLarge,
                 color = CvePalette.Accent,
             )
@@ -700,25 +700,25 @@ private fun ShizukuModule(
     }
     val statusText = when (shizukuStatus) {
         ShizukuStatus.READY ->
-            if (shizukuDetail.isBlank()) "已授权" else "已授权 · $shizukuDetail"
-        ShizukuStatus.PERMISSION_REQUIRED -> "待授权"
-        ShizukuStatus.NOT_RUNNING -> "服务未运行"
-        ShizukuStatus.NOT_INSTALLED -> "未安装"
+            if (shizukuDetail.isBlank()) "Authorized" else "Authorized · $shizukuDetail"
+        ShizukuStatus.PERMISSION_REQUIRED -> "Pending Authorization"
+        ShizukuStatus.NOT_RUNNING -> "Service Not Running"
+        ShizukuStatus.NOT_INSTALLED -> "Not Installed"
     }
     val (hintText, actionLabel, onAction) = when (shizukuStatus) {
         ShizukuStatus.NOT_INSTALLED -> Triple(
-            "未检测到 Shizuku Manager。请先安装它，再通过 adb 或无线调试启动服务。",
-            "下载 Shizuku",
+            "Shizuku Manager not detected. Please install it first, then start the service via adb or wireless debugging.",
+            "Download Shizuku",
             { openShizukuOrStore(context, launchApp = false) },
         )
         ShizukuStatus.NOT_RUNNING -> Triple(
-            "Shizuku 已安装但服务未运行。点击打开 Shizuku 并启动服务（adb 或无线调试）后，再请求授权。",
-            "打开 Shizuku",
+            "Shizuku is installed but service is not running. Click Open Shizuku and start the service (adb or wireless debugging), then request authorization.",
+            "Open Shizuku",
             { openShizukuOrStore(context, launchApp = true) },
         )
         ShizukuStatus.PERMISSION_REQUIRED -> Triple(
-            "点击「请求授权」后本应用会出现在 Shizuku 的待授权列表，在 Shizuku 中点「允许」即可。",
-            "请求授权",
+            "Click \"Request Authorization\" and this app will appear in Shizuku's pending authorization list, click \"Allow\" in Shizuku.",
+            "Request Authorization",
             onRequest,
         )
         ShizukuStatus.READY -> Triple("", "", {})
@@ -740,7 +740,7 @@ private fun ShizukuModule(
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Shizuku 授权",
+                        text = "Shizuku Authorization",
                         style = MaterialTheme.typography.titleSmall,
                         color = CvePalette.TextPrimary,
                     )
@@ -825,10 +825,10 @@ private fun StatusPill(text: String, tint: Color) {
 }
 
 private fun shizukuPillText(status: ShizukuStatus): String = when (status) {
-    ShizukuStatus.READY -> "已连接"
-    ShizukuStatus.PERMISSION_REQUIRED -> "待授权"
-    ShizukuStatus.NOT_RUNNING -> "未运行"
-    ShizukuStatus.NOT_INSTALLED -> "未安装"
+    ShizukuStatus.READY -> "Connected"
+    ShizukuStatus.PERMISSION_REQUIRED -> "Pending Authorization"
+    ShizukuStatus.NOT_RUNNING -> "Not Running"
+    ShizukuStatus.NOT_INSTALLED -> "Not Installed"
 }
 
 @Composable
@@ -912,7 +912,7 @@ private fun PipelinePanel(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "提权流水线",
+                text = "Privilege Escalation Pipeline",
                 style = MaterialTheme.typography.titleSmall,
                 color = CvePalette.TextPrimary,
                 modifier = Modifier.weight(1f),
@@ -940,13 +940,13 @@ private fun PipelinePanel(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "当前动作",
+                text = "Current Action",
                 style = MaterialTheme.typography.labelSmall,
                 color = CvePalette.TextMuted,
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(
-                text = hint.ifBlank { "等待开始" },
+                text = hint.ifBlank { "Waiting to start" },
                 style = MaterialTheme.typography.labelSmall.copy(
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.SemiBold,
@@ -1017,12 +1017,12 @@ private fun formatDuration(ms: Long): String {
 }
 
 private fun durationLabel(state: StageState, ms: Long): String = when (state) {
-    StageState.PENDING -> "待执行"
+    StageState.PENDING -> "Pending"
     StageState.RUNNING -> "${formatDuration(ms)} …"
     StageState.SUCCESS, StageState.DEGRADED -> formatDuration(ms)
-    StageState.FAILED -> "失败 · ${formatDuration(ms)}"
-    StageState.SKIPPED -> "跳过"
-    StageState.STOPPED -> "中断 · ${formatDuration(ms)}"
+    StageState.FAILED -> "Failed · ${formatDuration(ms)}"
+    StageState.SKIPPED -> "Skipped"
+    StageState.STOPPED -> "Interrupted · ${formatDuration(ms)}"
 }
 
 @Composable
@@ -1212,16 +1212,16 @@ private fun stateColor(state: StageState): Color = when (state) {
 }
 
 private fun statusLabel(raw: String): String = when (raw) {
-    "running" -> "执行中"
-    "ok" -> "成功"
-    "degraded" -> "降级完成"
-    "failed" -> "失败"
-    "skipped" -> "跳过"
-    "成功" -> "成功"
-    "失败" -> "失败"
-    "已停止" -> "已停止"
-    "启动中" -> "启动中"
-    "就绪" -> "待命"
+    "running" -> "Running"
+    "ok" -> "Success"
+    "degraded" -> "Degraded Complete"
+    "failed" -> "Failed"
+    "skipped" -> "Skipped"
+    "成功" -> "Success"
+    "失败" -> "Failed"
+    "已停止" -> "Stopped"
+    "启动中" -> "Starting"
+    "就绪" -> "Ready"
     else -> raw
 }
 
@@ -1243,9 +1243,9 @@ private fun TerminalPanel(
             }
             val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             cm.setPrimaryClip(ClipData.newPlainText("cve98260_log", sb.toString()))
-            Toast.makeText(context, "已复制 ${logs.size} 行日志", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Copied ${logs.size} lines of logs", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(context, "暂无日志可复制", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "No logs available to copy", Toast.LENGTH_SHORT).show()
         }
     }
     val shape = RoundedCornerShape(10.dp)
@@ -1277,7 +1277,7 @@ private fun TerminalPanel(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "终端",
+                    text = "Terminal",
                     style = MaterialTheme.typography.labelMedium.copy(
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.SemiBold,
@@ -1286,13 +1286,13 @@ private fun TerminalPanel(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = if (isRunning) "执行中" else "空闲",
+                    text = if (isRunning) "Executing" else "Idle",
                     style = MaterialTheme.typography.labelSmall,
                     color = if (isRunning) CvePalette.Accent else CvePalette.TextMuted,
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = "复制",
+                    text = "Copy",
                     style = MaterialTheme.typography.labelSmall.copy(fontFamily = FontFamily.Monospace),
                     color = CvePalette.Accent,
                     modifier = Modifier
@@ -1300,7 +1300,7 @@ private fun TerminalPanel(
                         .padding(horizontal = 6.dp, vertical = 2.dp),
                 )
                 Text(
-                    text = "清空",
+                    text = "Clear",
                     style = MaterialTheme.typography.labelSmall.copy(fontFamily = FontFamily.Monospace),
                     color = CvePalette.Danger,
                     modifier = Modifier
@@ -1308,7 +1308,7 @@ private fun TerminalPanel(
                         .padding(horizontal = 6.dp, vertical = 2.dp),
                 )
                 Text(
-                    text = "${logs.size} 行",
+                    text = "${logs.size} lines",
                     style = MaterialTheme.typography.labelSmall.copy(fontFamily = FontFamily.Monospace),
                     color = CvePalette.TextMuted,
                     modifier = Modifier.padding(start = 6.dp),
@@ -1324,7 +1324,7 @@ private fun TerminalPanel(
             if (logs.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        text = "等待执行…",
+                        text = "Waiting to Execute…",
                         style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                         color = CvePalette.TextMuted,
                     )
@@ -1437,7 +1437,7 @@ private fun ActionBar(
                 ),
             ) {
                 Text(
-                    text = "开始提权",
+                    text = "Start Privilege Escalation",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -1455,7 +1455,7 @@ private fun ActionBar(
                 ),
             ) {
                 Text(
-                    text = "停止",
+                    text = "Stop",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
