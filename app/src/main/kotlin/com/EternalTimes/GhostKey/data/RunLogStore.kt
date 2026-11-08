@@ -12,11 +12,11 @@ import java.util.Locale
 
 /** 一次运行的结局。 */
 enum class RunResult(val label: String) {
-    RUNNING("进行中"),
-    SUCCESS("成功"),
-    FAILED("失败"),
-    STOPPED("已停止"),
-    INTERRUPTED("中断"),
+    RUNNING("Running"),
+    SUCCESS("Success"),
+    FAILED("Failed"),
+    STOPPED("Stopped"),
+    INTERRUPTED("Interrupted"),
 }
 
 /**
